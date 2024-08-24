@@ -15,11 +15,12 @@ interface Props {
     canDownloadSubtitles: boolean;
     onLoadSubtitles: () => void;
     onDownloadSubtitles: () => void;
+    onBulkExportSubtitles: () => void;
     onShowMiningHistory: () => void;
 }
 
 const SidePanelTopControls = React.forwardRef(function SidePanelTopControls(
-    { show, canDownloadSubtitles, onLoadSubtitles, onDownloadSubtitles, onShowMiningHistory }: Props,
+    { show, canDownloadSubtitles, onLoadSubtitles, onDownloadSubtitles, onBulkExportSubtitles, onShowMiningHistory }: Props,
     ref: ForwardedRef<HTMLDivElement>
 ) {
     const { t } = useTranslation();
@@ -52,6 +53,13 @@ const SidePanelTopControls = React.forwardRef(function SidePanelTopControls(
                             </Tooltip>
                         </Grid>
                     )}
+                    <Grid item>
+                        <Tooltip title={t('action.bulkExportSubtitles')!}>
+                            <IconButton onClick={onBulkExportSubtitles}>
+                                <SubtitlesIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Grid>
                     <Grid item>
                         <IconButton onClick={onShowMiningHistory}>
                             <Tooltip title={t('bar.miningHistory')!}>

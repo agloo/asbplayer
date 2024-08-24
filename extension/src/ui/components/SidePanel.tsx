@@ -265,6 +265,10 @@ export default function SidePanel({ settings, extension }: Props) {
         }
     }, [subtitles, subtitleFileNames, subtitleReader]);
 
+    const handleBulkExportSubtitles = useCallback(() => {
+
+    }, []);
+
     const topControlsRef = useRef<HTMLDivElement>(null);
     const [showTopControls, setShowTopControls] = useState<boolean>(false);
 
@@ -527,6 +531,7 @@ export default function SidePanel({ settings, extension }: Props) {
                                 onLoadSubtitles={handleLoadSubtitles}
                                 canDownloadSubtitles={canDownloadSubtitles}
                                 onDownloadSubtitles={handleDownloadSubtitles}
+                                onBulkExportSubtitles={handleBulkExportSubtitles}
                                 onShowMiningHistory={handleShowCopyHistory}
                             />
                             <SidePanelBottomControls
