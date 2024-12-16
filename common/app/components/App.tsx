@@ -249,6 +249,7 @@ function App({ origin, logoUrl, settings, extension, fetcher, onSettingsChanged,
     const [sources, setSources] = useState<MediaSources>({ subtitleFiles: [] });
     const [loadingSources, setLoadingSources] = useState<File[]>([]);
     const [dragging, setDragging] = useState<boolean>(false);
+    const [bulkExporting, setBulkExporting] = useState<boolean>(false);
     const dragEnterRef = useRef<Element | null>(null);
     const [fileName, setFileName] = useState<string>();
     const [ankiDialogOpen, setAnkiDialogOpen] = useState<boolean>(false);
@@ -455,6 +456,21 @@ function App({ origin, logoUrl, settings, extension, fetcher, onSettingsChanged,
                         tags: settingsRef.current.tags,
                         mode: postMineAction === PostMineAction.updateLastCard ? 'updateLast' : 'default',
                     });
+
+                    if (bulkExporting) {
+                        if (newCard.surroundingSubtitles?.[1]) {
+                            setJumpToSubtitle(newCard.surroundingSubtitles?.[1]);
+                            const newCard = {
+                                ...card,
+                                subtitleFileName: card.subtitleFileName || card.file?.name || '',
+                                timestamp: Date.now(),
+                                id: id || uuidv4(),
+                            };
+                        }
+                        else {
+                            setBulkExporting(false);
+                        }
+                    }
                     break;
                 default:
                     throw new Error('Unknown post mine action: ' + postMineAction);
@@ -603,6 +619,15 @@ function App({ origin, logoUrl, settings, extension, fetcher, onSettingsChanged,
             );
         },
         [subtitleReader]
+    );
+
+    const handleBulkExport = useCallback(
+        (subtitle: SubtitleModel, subtitleFileName: string) => {
+            setBulkExporting(true);
+            // Start the first export
+            handleCopy(subtitle, subtitleFileName);
+        },
+        [subtitle, handleError, t]
     );
 
     const handleJumpToSubtitle = useCallback(
@@ -827,10 +852,10 @@ function App({ origin, logoUrl, settings, extension, fetcher, onSettingsChanged,
                     if (message.src) {
                         console.error(
                             'Received sync request but the requesting tab ID ' +
-                                message.tabId +
-                                ' with src ' +
-                                message.src +
-                                ' was not found'
+                            message.tabId +
+                            ' with src ' +
+                            message.src +
+                            ' was not found'
                         );
                     } else {
                         console.error(

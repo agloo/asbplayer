@@ -121,16 +121,16 @@ export async function exportCard(card: CardModel, ankiSettings: AnkiSettings, ex
         card.audio === undefined
             ? undefined
             : AudioClip.fromBase64(
-                  source,
-                  card.subtitle.start,
-                  card.subtitle.end,
-                  card.audio.playbackRate ?? 1,
-                  card.audio.base64,
-                  card.audio.extension,
-                  card.audio.error
-              );
+                source,
+                card.subtitle.start,
+                card.subtitle.end,
+                card.audio.playbackRate ?? 1,
+                card.audio.base64,
+                card.audio.extension,
+                card.audio.error
+            );
 
-    return await anki.export({
+    let result = await anki.export({
         text: card.text ?? extractText(card.subtitle, card.surroundingSubtitles),
         track1: extractText(card.subtitle, card.surroundingSubtitles, 0),
         track2: extractText(card.subtitle, card.surroundingSubtitles, 1),
@@ -148,6 +148,12 @@ export async function exportCard(card: CardModel, ankiSettings: AnkiSettings, ex
         tags: ankiSettings.tags,
         mode: exportMode,
     });
+
+    // If we're in bulk export mode, kick off the next export now that we've finished.
+    if (exportMode == 'bulk') {
+
+    }
+    return result;
 }
 
 export class Anki {

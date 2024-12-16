@@ -358,6 +358,7 @@ interface SubtitlePlayerProps {
     settings: AsbplayerSettings;
     keyBinder: KeyBinder;
     maxResizeWidth: number;
+    exporting: boolean;
 }
 
 export default function SubtitlePlayer({
@@ -400,8 +401,8 @@ export default function SubtitlePlayer({
         () =>
             subtitles
                 ? Array(subtitles.length)
-                      .fill(undefined)
-                      .map((_) => createRef<HTMLTableRowElement>())
+                    .fill(undefined)
+                    .map((_) => createRef<HTMLTableRowElement>())
                 : [],
         [subtitles]
     );

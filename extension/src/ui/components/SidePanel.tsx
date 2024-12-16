@@ -15,6 +15,7 @@ import {
     JumpToSubtitleMessage,
     DownloadImageMessage,
     DownloadAudioMessage,
+    PostMineAction,
 } from '@project/common';
 import { AsbplayerSettings } from '@project/common/settings';
 import { AudioClip } from '@project/common/audio-clip';
@@ -265,9 +266,19 @@ export default function SidePanel({ settings, extension }: Props) {
         }
     }, [subtitles, subtitleFileNames, subtitleReader]);
 
-    const handleBulkExportSubtitles = useCallback(() => {
-
-    }, []);
+    const handleBulkExportSubtitles = useCallback(async () => {
+        // If we have an active subtitle track, add all of its subtitles to the export queue.
+        if (syncedVideoTab && subtitles) {
+            // Send some message to App.tsx to start bulk exporting. It has the state to actually do things.
+            const message: AsbPlayerToVideoCommandV2<CopySubtitleMessage> = {
+                sender: 'asbplayerv2',
+                message: { command: 'copy-subtitle', postMineAction: PostMineAction.exportCard },
+                tabId: syncedVideoTab.id,
+                src: syncedVideoTab.src,
+            };
+            chrome.runtime.sendMessage(message);
+        }
+    }, [subtitles, syncedVideoTab]);
 
     const topControlsRef = useRef<HTMLDivElement>(null);
     const [showTopControls, setShowTopControls] = useState<boolean>(false);
@@ -431,7 +442,7 @@ export default function SidePanel({ settings, extension }: Props) {
         },
         [syncedVideoTab, settings.clickToMineDefaultAction, currentTabId]
     );
-    const noOp = useCallback(() => {}, []);
+    const noOp = useCallback(() => { }, []);
 
     const { initialized: i18nInitialized } = useI18n({ language: settings.language });
 
